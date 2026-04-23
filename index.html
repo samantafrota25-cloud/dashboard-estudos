@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sam — Dashboard de Estudos V4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0a0f;
+      --surface:#12121a;
+      --surface2:#1a1a26;
+      --surface3:#232338;
+      --accent:#7c6af7;
+      --accent2:#f76a8a;
+      --accent3:#6af7c8;
+      --accent4:#f7c86a;
+      --accent5:#a8f76a;
+      --accent6:#f7a06a;
+      --text:#e8e8f0;
+      --muted:#8d8da7;
+      --border:rgba(124,106,247,0.16);
+      --shadow:0 16px 40px rgba(0,0,0,.3);
+      --radius:18px;
+      --danger:#f76a8a;
+      --success:#6af7c8;
+      --warning:#f7c86a;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      min-height:100vh;
+      background:
+        radial-gradient(ellipse 60% 40% at 85% 10%, rgba(124,106,247,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 10% 80%, rgba(106,247,200,0.06) 0%, transparent 52%),
+        linear-gradient(180deg, #09090d 0%, #0a0a0f 100%);
+      color:var(--text);
+      font-family:'DM Mono', monospace;
+      padding:24px;
+    }
+    .shell{max-width:1380px;margin:0 auto}
+    header{
+      display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:24px;
+    }
+    .logo-block h1{
+      font-family:'Syne',sans-serif;font-size:34px;font-weight:800;letter-spacing:-0.8px;line-height:1;
+    }
+    .logo-block h1 span{color:var(--accent)}
+    .logo-block p{
+      margin-top:8px;color:var(--muted);font-size:11px;letter-spacing:1.8px;text-transform:uppercase;
+    }
+    .header-side{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;align-items:flex-start}
+    .date-block,.mini-panel{
+      background:rgba(18,18,26,.9);border:1px solid var(--border);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);backdrop-filter:blur(10px);
+    }
+    .date-block{min-width:190px;text-align:right}
+    .day-num{font-family:'Syne',sans-serif;font-size:42px;font-weight:800;color:var(--accent);line-height:1}
+    .day-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+    .mini-panel{min-width:320px}
+    .mini-panel .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+
+    .section-title{
+      font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);
+      margin:28px 0 12px;border-left:3px solid var(--accent);padding-left:10px;
+    }
+
+    .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}
+    .col-3{grid-column:span 3}.col-4{grid-column:span 4}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-7{grid-column:span 7}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+
+    .card{
+      background:rgba(18,18,26,.93);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;box-shadow:var(--shadow);backdrop-filter:blur(10px);
+    }
+    .card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-accent,var(--accent));opacity:.75}
+    .card:hover{border-color:rgba(124,106,247,.28);transform:translateY(-1px);transition:.2s ease}
+    .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+    .card-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+    .card-value{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;line-height:1}
+    .card-sub{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.45}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;font-size:10px;color:var(--muted);background:rgba(124,106,247,.06);white-space:nowrap;
+    }
+    .muted{color:var(--muted)} .accent{color:var(--accent)} .accent2{color:var(--accent2)} .accent3{color:var(--accent3)} .accent4{color:var(--accent4)}
+    .danger{color:var(--danger)} .success{color:var(--success)}
+
+    .progress-bar-wrap{margin-top:14px}
+    .progress-label{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted);margin-bottom:6px}
+    .progress-track{height:8px;background:var(--surface2);border-radius:999px;overflow:hidden}
+    .progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--fill-start,var(--accent)),var(--fill-end,var(--accent2)));transition:width .45s ease}
+
+    .q-stats{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .q-stat-item{flex:1;min-width:86px;background:var(--surface2);border:1px solid rgba(124,106,247,.08);border-radius:12px;padding:12px 10px;text-align:center}
+    .q-stat-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;line-height:1}
+    .q-stat-label{font-size:10px;color:var(--muted);margin-top:5px;letter-spacing:1px;text-transform:uppercase}
+
+    table{width:100%;border-collapse:collapse;margin-top:12px;font-size:11px}
+    th{color:var(--muted);font-weight:400;letter-spacing:1px;text-align:left;padding:8px 6px;border-bottom:1px solid var(--border)}
+    td{padding:9px 6px;border-bottom:1px solid rgba(124,106,247,.07);vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    .subject-chip{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+    .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+    .pct-bar{height:4px;background:var(--surface2);border-radius:999px;overflow:hidden;margin-top:4px;width:86px}
+    .pct-fill{height:100%;border-radius:999px}
+
+    .week-chart{height:130px;display:flex;gap:10px;align-items:flex-end;margin-top:16px}
+    .bar-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;height:100%}
+    .bar{width:100%;max-width:58px;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg, rgba(124,106,247,.95), rgba(124,106,247,.4));min-height:8px;opacity:.75;border:1px solid rgba(255,255,255,.04)}
+    .bar.today{background:linear-gradient(180deg, var(--accent2), var(--accent));opacity:1}
+    .bar.empty{opacity:.18}
+    .bar-day,.bar-val{font-size:10px;color:var(--muted)}
+    .bar-day{text-transform:uppercase;letter-spacing:1px}
+
+    .streak-head{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+    .streak-dots{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;margin-top:16px}
+    .streak-dot{height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;border:1px solid transparent}
+    .dot-done{background:rgba(124,106,247,.18);color:var(--accent);border-color:rgba(124,106,247,.26)}
+    .dot-empty{background:var(--surface2);color:var(--muted);border-color:rgba(255,255,255,.03)}
+    .dot-today{background:var(--accent3);color:#08100d;border-color:rgba(106,247,200,.4)}
+
+    .donut-wrap{display:flex;gap:20px;align-items:center;margin-top:12px;flex-wrap:wrap}
+    .donut-box{position:relative;width:118px;height:118px;flex-shrink:0}
+    .donut-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none}
+    .donut-center strong{font-family:'Syne',sans-serif;font-size:20px}
+    .donut-center span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+    .donut-legend{display:flex;flex-direction:column;gap:9px;flex:1;min-width:190px}
+    .legend-item{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--muted)}
+    .legend-val{margin-left:auto;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;font-weight:700}
+
+    .meta-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .meta-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid rgba(124,106,247,.10)}
+    .meta-row:last-child{border-bottom:none}
+    .meta-name{font-size:12px;flex:1;line-height:1.4}
+    .meta-check{
+      width:24px;height:24px;border-radius:8px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:.15s ease;flex-shrink:0;background:transparent;color:var(--text);
+    }
+    .meta-check.done{background:var(--accent3);border-color:var(--accent3);color:#08100d;font-weight:700}
+
+    .dash-input,.dash-select,.dash-textarea{
+      width:100%;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit;outline:none;transition:border-color .2s ease, background .2s ease;
+    }
+    .dash-input:focus,.dash-select:focus,.dash-textarea:focus{border-color:var(--accent);background:var(--surface3)}
+    .dash-textarea{resize:vertical;min-height:86px}
+    .dash-btn{
+      border:none;border-radius:10px;padding:10px 14px;background:var(--accent);color:#fff;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:.2s ease;white-space:nowrap;
+    }
+    .dash-btn:hover{opacity:.88;transform:translateY(-1px)}
+    .dash-btn.secondary{background:transparent;border:1px solid var(--border);color:var(--muted)}
+    .dash-btn.secondary:hover{color:var(--text);border-color:rgba(124,106,247,.35);background:rgba(124,106,247,.06)}
+    .dash-btn.danger{background:rgba(247,106,138,.12);color:var(--accent2);border:1px solid rgba(247,106,138,.22)}
+    .dash-btn.green{background:rgba(106,247,200,.12);color:var(--accent3);border:1px solid rgba(106,247,200,.22)}
+    .field-label{font-size:10px;color:var(--muted);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+    .field-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:120px}
+    .row-fields,.settings-inline,.filters-row{display:flex;gap:10px;flex-wrap:wrap}
+    .settings-inline{align-items:end;margin-top:10px}
+    .filters-row{align-items:end}
+
+    .fadiga-opts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+    .fadiga-btn{
+      flex:1;min-width:88px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);border-radius:12px;padding:10px 8px;text-align:center;cursor:pointer;transition:.2s ease;font-size:11px;
+    }
+    .fadiga-btn .emoji{display:block;font-size:20px;margin-bottom:4px}
+    .fadiga-btn.selected{border-color:var(--accent);color:var(--text);background:rgba(124,106,247,.14);box-shadow:0 0 0 1px rgba(124,106,247,.12) inset}
+
+    .log-entry,.absence-entry{
+      background:var(--surface2);border-radius:12px;padding:13px 14px;margin-top:10px;border-left:3px solid var(--accent);font-size:11px;
+    }
+    .absence-entry{border-left-color:var(--accent2);background:rgba(247,106,138,.07)}
+    .log-top{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap;margin-bottom:8px}
+    .log-time{color:var(--muted);font-size:10px}
+    .log-actions{display:flex;gap:8px}
+    .log-row{display:flex;gap:16px;flex-wrap:wrap}
+    .log-item{display:flex;flex-direction:column;gap:4px;min-width:84px}
+    .lk{color:var(--muted);font-size:10px}
+    .lv{color:var(--text);font-size:12px;line-height:1.35}
+
+    .quote-card{--card-accent:var(--accent3);background:linear-gradient(135deg,#0e1714 0%, #12121a 70%)}
+    .quote-text{font-family:'Syne',sans-serif;font-size:18px;font-weight:600;line-height:1.5;color:var(--accent3)}
+    .footer-note{margin-top:18px;color:var(--muted);font-size:11px;line-height:1.5}
+    .empty-state{color:var(--muted);font-size:12px;padding:14px 0 4px;line-height:1.55}
+
+    .canvas-wrap{margin-top:14px;background:linear-gradient(180deg, rgba(124,106,247,.03), transparent);border:1px solid rgba(124,106,247,.08);border-radius:16px;padding:10px}
+    canvas{width:100%;display:block}
+    .analytics-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+    .analytics-box{background:var(--surface2);border-radius:12px;padding:12px;border:1px solid rgba(124,106,247,.08)}
+    .analytics-box .small{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+    .analytics-box strong{display:block;margin-top:8px;font-family:'Syne',sans-serif;font-size:22px}
+
+    .calendar-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .calendar-nav{display:flex;gap:8px;align-items:center}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:14px}
+    .calendar-weekday{
+      font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:0 4px 4px;text-align:center;
+    }
+    .calendar-day{
+      min-height:92px;border:1px solid rgba(124,106,247,.10);border-radius:14px;background:rgba(26,26,38,.7);padding:8px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:.15s ease;
+    }
+    .calendar-day:hover{border-color:rgba(124,106,247,.3)}
+    .calendar-day.muted-day{opacity:.38}
+    .calendar-day.today{box-shadow:0 0 0 1px rgba(106,247,200,.35) inset;border-color:rgba(106,247,200,.35)}
+    .calendar-day.selected{box-shadow:0 0 0 1px rgba(124,106,247,.45) inset;border-color:rgba(124,106,247,.45)}
+    .calendar-day.has-study{background:linear-gradient(180deg, rgba(124,106,247,.11), rgba(18,18,26,.95))}
+    .calendar-day.has-absence{border-color:rgba(247,106,138,.28)}
+    .calendar-day-head{display:flex;justify-content:space-between;gap:6px;align-items:center}
+    .calendar-num{font-family:'Syne',sans-serif;font-size:16px;font-weight:700}
+    .calendar-hours{font-size:10px;color:var(--accent3)}
+    .calendar-mini{font-size:10px;color:var(--muted);line-height:1.35}
+    .calendar-detail{margin-top:14px;padding:14px;border-radius:14px;background:var(--surface2);border:1px solid rgba(124,106,247,.08)}
+    .calendar-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:rgba(124,106,247,.08);border:1px solid rgba(124,106,247,.12);font-size:10px;color:var(--muted)}
+
+    .timer-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+    .timer-display{
+      font-family:'Syne',sans-serif;font-size:54px;font-weight:800;letter-spacing:-1px;line-height:1;margin-top:8px
+    }
+    .timer-sub{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+    .timer-controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .timer-status{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .timer-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:12px;background:var(--surface2);border:1px solid rgba(124,106,247,.08);font-size:11px;color:var(--muted)}
+    .timer-side{background:var(--surface2);border-radius:14px;padding:14px;border:1px solid rgba(124,106,247,.08)}
+    .small-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .modal-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.66);display:none;align-items:center;justify-content:center;z-index:50;padding:18px;
+    }
+    .modal-overlay.open{display:flex}
+    .modal{
+      width:min(100%,520px);background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px;box-shadow:var(--shadow)
+    }
+    .modal h3{font-family:'Syne',sans-serif;font-size:18px;margin-bottom:16px}
+    .modal-meta-item{display:flex;gap:8px;margin-bottom:8px}
+    .modal-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+
+    .sync-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;align-items:start}
+    .sync-panel{background:var(--surface2);border:1px solid rgba(124,106,247,.08);border-radius:14px;padding:14px}
+    .sync-status{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+    .status-line{font-size:11px;color:var(--muted);line-height:1.55}
+    .status-strong{color:var(--text)}
+    .cloud-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:10px}
+    .toggle-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:12px}
+    .toggle-line input{accent-color:var(--accent)}
+    .setup-details{margin-top:14px;border:1px solid rgba(124,106,247,.12);border-radius:12px;background:rgba(124,106,247,.03);overflow:hidden}
+    .setup-details summary{cursor:pointer;list-style:none;padding:12px 14px;font-size:11px;color:var(--text);text-transform:uppercase;letter-spacing:1px}
+    .setup-details summary::-webkit-details-marker{display:none}
+    .setup-details-body{padding:0 14px 14px}
+    .code-box{width:100%;min-height:210px;background:#0f1017;color:#d8d8e6;border:1px solid rgba(124,106,247,.14);border-radius:12px;padding:12px;font:12px/1.55 "DM Mono", monospace;resize:vertical}
+    @media (max-width:1100px){
+      .col-3,.col-4,.col-5,.col-6,.col-7,.col-8{grid-column:span 12}
+      .streak-dots{grid-template-columns:repeat(8,minmax(0,1fr))}
+      .analytics-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .timer-grid{grid-template-columns:1fr}
+      .sync-grid{grid-template-columns:1fr}
+    }
+    @media (max-width:700px){
+      body{padding:14px}
+      .logo-block h1{font-size:28px}
+      .card{padding:16px}
+      .date-block,.mini-panel{padding:14px;width:100%}
+      .header-side{width:100%;justify-content:stretch}
+      .card-value{font-size:32px}
+      .timer-display{font-size:42px}
+      .calendar-day{min-height:82px}
+      .streak-dots{grid-template-columns:repeat(6,minmax(0,1fr))}
+      .analytics-summary{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="logo-block">
+        <h1>Sam<span>.</span>study</h1>
+        <p>Dashboard visual de estudos · versão 4 com Supabase</p>
+      </div>
+
+      <div class="header-side">
+        <div class="mini-panel">
+          <div class="label">Ações rápidas</div>
+          <div class="top-actions">
+            <button class="dash-btn secondary" id="loadDemoBtn">Exemplo</button>
+            <button class="dash-btn secondary" id="exportBtn">Exportar</button>
+            <label class="dash-btn secondary" for="importFile" style="cursor:pointer;">Importar</label>
+            <input type="file" id="importFile" accept=".json" class="sr-only">
+            <button class="dash-btn danger" id="resetBtn">Zerar tudo</button>
+          </div>
+        </div>
+        <div class="date-block">
+          <div class="day-num" id="dayNum">—</div>
+          <div class="day-label" id="dayLabel">carregando...</div>
+        </div>
+      </div>
+    </header>
+
+
+    <div class="section-title">☁️ Sincronização opcional</div>
+    <div class="grid">
+      <div class="card col-12" style="--card-accent:var(--accent)">
+        <div class="sync-grid">
+          <div class="sync-panel">
+            <div class="card-top">
+              <div>
+                <div class="card-label">Configuração do Supabase</div>
+                <div class="card-sub">Cole a URL do projeto e a chave pública. O dashboard continua funcionando em modo local mesmo sem configurar nada.</div>
+              </div>
+              <div class="pill" id="cloudModePill">modo local</div>
+            </div>
+
+            <div class="row-fields">
+              <div class="field-group" style="flex:2; min-width:240px;">
+                <div class="field-label">Project URL</div>
+                <input class="dash-input" id="sbProjectUrl" placeholder="https://SEU-PROJETO.supabase.co">
+              </div>
+              <div class="field-group" style="flex:2; min-width:240px;">
+                <div class="field-label">Publishable / anon key</div>
+                <input class="dash-input" id="sbAnonKey" placeholder="cole a chave pública aqui">
+              </div>
+            </div>
+
+            <div class="toggle-line">
+              <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
+                <input type="checkbox" id="sbAutoSync">
+                <span>Sincronizar automaticamente depois de cada alteração local</span>
+              </label>
+            </div>
+
+            <div class="top-actions" style="justify-content:flex-start;margin-top:12px;">
+              <button class="dash-btn secondary" id="sbSaveConfigBtn">Salvar conexão</button>
+              <button class="dash-btn secondary" id="sbClearConfigBtn">Limpar conexão</button>
+              <button class="dash-btn secondary" id="sbSyncDownBtn">Baixar da nuvem</button>
+              <button class="dash-btn secondary" id="sbSyncUpBtn">Enviar para a nuvem</button>
+            </div>
+
+            <div class="sync-status">
+              <div class="pill" id="sbUserPill">sem login</div>
+              <div class="pill" id="sbLastSyncPill">sem sync</div>
+            </div>
+            <div class="status-line" id="sbStatusText">Modo local ativo. Configure o Supabase para sincronizar entre dispositivos.</div>
+
+            <details class="setup-details">
+              <summary>SQL mínimo para criar a tabela no Supabase</summary>
+              <div class="setup-details-body">
+                <div class="cloud-note">Crie uma tabela chamada <span class="status-strong">dashboard_state</span> no SQL Editor do Supabase. Esse modelo salva todo o dashboard em um único JSON por usuário, o que simplifica bastante a primeira configuração.</div>
+                <textarea class="code-box" id="sbSqlBox" readonly>create table public.dashboard_state (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  payload jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.dashboard_state enable row level security;
+
+create policy "select own dashboard"
+on public.dashboard_state
+for select
+using ((select auth.uid()) = user_id);
+
+create policy "insert own dashboard"
+on public.dashboard_state
+for insert
+with check ((select auth.uid()) = user_id);
+
+create policy "update own dashboard"
+on public.dashboard_state
+for update
+using ((select auth.uid()) = user_id)
+with check ((select auth.uid()) = user_id);</textarea>
+              </div>
+            </details>
+          </div>
+
+          <div class="sync-panel">
+            <div class="card-label">Login</div>
+            <div class="card-sub">Para um HTML local, o jeito mais prático é entrar com e-mail e senha. A senha não fica salva neste arquivo.</div>
+
+            <div class="row-fields" style="margin-top:12px;">
+              <div class="field-group" style="min-width:220px;">
+                <div class="field-label">E-mail</div>
+                <input class="dash-input" id="sbEmail" type="email" placeholder="voce@email.com">
+              </div>
+              <div class="field-group" style="min-width:180px;">
+                <div class="field-label">Senha</div>
+                <input class="dash-input" id="sbPassword" type="password" placeholder="sua senha">
+              </div>
+            </div>
+
+            <div class="top-actions" style="justify-content:flex-start;margin-top:12px;">
+              <button class="dash-btn green" id="sbSignInBtn">Entrar</button>
+              <button class="dash-btn secondary" id="sbSignUpBtn">Criar conta</button>
+              <button class="dash-btn danger" id="sbSignOutBtn">Sair</button>
+            </div>
+
+            <div class="cloud-note">
+              Fluxo sugerido: 1) salve a conexão, 2) crie a conta ou entre, 3) use “Enviar para a nuvem” no aparelho atual, 4) no outro aparelho faça login e clique em “Baixar da nuvem”.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">🌅 Hoje</div>
+    <div class="grid">
+      <div class="card col-6" style="--card-accent:var(--accent3)">
+        <div class="card-top">
+          <div>
+            <div class="card-label">⏱ Horas estudadas hoje</div>
+            <div class="card-value accent3" id="tHoursValue">0h</div>
+            <div class="card-sub" id="tHoursSub">Meta diária ainda não iniciada.</div>
+          </div>
+          <div class="pill" id="todayDatePill">hoje</div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-label"><span>0h</span><span id="tHoursMeta">meta: 7h</span></div>
+          <div class="progress-track"><div class="progress-fill" id="tHoursBar" style="width:0%;--fill-start:#6af7c8;--fill-end:#7c6af7"></div></div>
+        </div>
+      </div>
+
+      <div class="card col-6" style="--card-accent:var(--accent4)">
+        <div class="card-label">🎯 Questões hoje — geral</div>
+        <div class="card-value accent4" id="tQTotal">0</div>
+        <div class="q-stats">
+          <div class="q-stat-item"><div class="q-stat-num accent3" id="tQCorrect">0</div><div class="q-stat-label">Certas</div></div>
+          <div class="q-stat-item"><div class="q-stat-num accent2" id="tQWrong">0</div><div class="q-stat-label">Erradas</div></div>
+          <div class="q-stat-item"><div class="q-stat-num accent4" id="tQPct">—</div><div class="q-stat-label">% Acerto</div></div>
+        </div>
+      </div>
+
+      <div class="card col-12" style="--card-accent:var(--accent4)">
+        <div class="card-top">
+          <div class="card-label">📊 Questões hoje — por matéria</div>
+          <div class="pill" id="tSessionCount">0 sessões</div>
+        </div>
+        <table>
+          <thead><tr><th>Matéria</th><th>Total</th><th>Certas</th><th>Erradas</th><th>% Acerto</th></tr></thead>
+          <tbody id="tTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-title">📅 Ontem</div>
+    <div class="grid">
+      <div class="card col-6" style="--card-accent:var(--accent)">
+        <div class="card-label">⏱ Horas estudadas ontem</div>
+        <div class="card-value" id="yHoursValue">0h</div>
+        <div class="card-sub" id="yHoursSub">Sem registros ontem.</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-label"><span>0h</span><span id="yHoursMeta">meta: 7h</span></div>
+          <div class="progress-track"><div class="progress-fill" id="yHoursBar" style="width:0%;--fill-start:#7c6af7;--fill-end:#f76a8a"></div></div>
+        </div>
+      </div>
+
+      <div class="card col-6" style="--card-accent:var(--accent2)">
+        <div class="card-label">🎯 Questões ontem — geral</div>
+        <div class="card-value accent2" id="yQTotal">0</div>
+        <div class="q-stats">
+          <div class="q-stat-item"><div class="q-stat-num accent3" id="yQCorrect">0</div><div class="q-stat-label">Certas</div></div>
+          <div class="q-stat-item"><div class="q-stat-num accent2" id="yQWrong">0</div><div class="q-stat-label">Erradas</div></div>
+          <div class="q-stat-item"><div class="q-stat-num accent4" id="yQPct">—</div><div class="q-stat-label">% Acerto</div></div>
+        </div>
+      </div>
+
+      <div class="card col-12" style="--card-accent:var(--accent2)">
+        <div class="card-top">
+          <div class="card-label">📊 Questões ontem — por matéria</div>
+          <div class="pill" id="ySessionCount">0 sessões</div>
+        </div>
+        <table>
+          <thead><tr><th>Matéria</th><th>Total</th><th>Certas</th><th>Erradas</th><th>% Acerto</th></tr></thead>
+          <tbody id="yTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-title">⏳ Pomodoro / Cronômetro</div>
+    <div class="grid">
+      <div class="card col-12" style="--card-accent:var(--accent3)">
+        <div class="timer-grid">
+          <div>
+            <div class="card-top">
+              <div>
+                <div class="card-label">Timer de estudo</div>
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="timer-sub" id="timerSubtitle">Modo pomodoro · pronta para começar o foco.</div>
+              </div>
+              <div class="pill" id="timerModePill">pomodoro</div>
+            </div>
+
+            <div class="timer-controls">
+              <button class="dash-btn green" id="timerStartBtn">Iniciar</button>
+              <button class="dash-btn secondary" id="timerPauseBtn">Pausar</button>
+              <button class="dash-btn secondary" id="timerResetBtn">Resetar</button>
+              <button class="dash-btn secondary" id="timerApplyBtn">Usar tempo no registro</button>
+            </div>
+
+            <div class="timer-status">
+              <div class="timer-chip" id="timerPhaseChip">Fase: foco</div>
+              <div class="timer-chip" id="timerPomodoroChip">Pomodoros concluídos: 0</div>
+              <div class="timer-chip" id="timerElapsedChip">Tempo acumulado: 0h</div>
+            </div>
+
+            <div class="small-note">
+              Você pode usar como pomodoro ou cronômetro livre. No cronômetro, o tempo sobe. No pomodoro, ele conta regressivamente e alterna foco/pausa.
+            </div>
+          </div>
+
+          <div class="timer-side">
+            <div class="filters-row">
+              <div class="field-group">
+                <div class="field-label">Modo</div>
+                <select class="dash-select" id="timerMode">
+                  <option value="pomodoro">Pomodoro</option>
+                  <option value="stopwatch">Cronômetro</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <div class="field-label">Foco (min)</div>
+                <input class="dash-input" type="number" id="focusMinutes" min="1" max="180" step="1" value="25">
+              </div>
+              <div class="field-group">
+                <div class="field-label">Pausa (min)</div>
+                <input class="dash-input" type="number" id="breakMinutes" min="1" max="60" step="1" value="5">
+              </div>
+            </div>
+            <div class="small-note">Dica: quando terminar, clique em “Usar tempo no registro” para preencher automaticamente o registro da sessão.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">📈 Visão geral</div>
+    <div class="grid">
+      <div class="card col-4" style="--card-accent:var(--accent4)">
+        <div class="streak-head">
+          <div>
+            <div class="card-label">🔥 Sequência de estudo</div>
+            <div class="card-value accent4" id="streakValue">0 dias</div>
+            <div class="card-sub" id="streakSub">Sem sequência ainda.</div>
+          </div>
+          <div class="pill" id="recordPill">recorde: 0</div>
+        </div>
+        <div class="streak-dots" id="streakDots"></div>
+      </div>
+
+      <div class="card col-8" style="--card-accent:var(--accent)">
+        <div class="card-top">
+          <div>
+            <div class="card-label">📊 Horas por dia — semana atual</div>
+            <div class="card-sub">Segunda a domingo, com base nas sessões registradas.</div>
+          </div>
+          <div class="pill" id="weekRangePill"></div>
+        </div>
+        <div class="week-chart" id="weekChart"></div>
+      </div>
+
+      <div class="card col-6" style="--card-accent:var(--accent3)">
+        <div class="card-top">
+          <div>
+            <div class="card-label">📚 Distribuição de horas por matéria</div>
+            <div class="card-sub">Total acumulado a partir dos seus registros.</div>
+          </div>
+          <div class="pill" id="distHoursPill">0h totais</div>
+        </div>
+        <div class="donut-wrap">
+          <div class="donut-box">
+            <svg viewBox="0 0 120 120" width="118" height="118" id="donutSvg" aria-hidden="true">
+              <circle cx="60" cy="60" r="38" fill="none" stroke="#1a1a26" stroke-width="16"></circle>
+            </svg>
+            <div class="donut-center">
+              <strong id="donutCenterValue">0h</strong>
+              <span>acumuladas</span>
+            </div>
+          </div>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+      </div>
+
+      <div class="card col-6" style="--card-accent:var(--accent3)">
+        <div class="card-top">
+          <div class="card-label" style="margin-bottom:0">✅ Metas diárias</div>
+          <div class="meta-tools"><button class="dash-btn secondary" id="editGoalsBtn">Editar metas</button></div>
+        </div>
+        <div class="settings-inline">
+          <div class="field-group" style="max-width:110px;">
+            <div class="field-label">Meta diária · horas</div>
+            <input class="dash-input" type="number" id="dailyGoalHoursInput" min="0" step="1" max="24" placeholder="0">
+          </div>
+          <div class="field-group" style="max-width:120px;">
+            <div class="field-label">Meta diária · minutos</div>
+            <input class="dash-input" type="number" id="dailyGoalMinutesInput" min="0" max="59" step="1" placeholder="00">
+          </div>
+          <div><button class="dash-btn secondary" id="saveGoalHoursBtn">Salvar meta</button></div>
+        </div>
+        <div id="goalsList" style="margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <div class="section-title">🔎 Análise por matéria e desempenho</div>
+    <div class="grid">
+      <div class="card col-12" style="--card-accent:var(--accent)">
+        <div class="filters-row">
+          <div class="field-group" style="max-width:260px;">
+            <div class="field-label">Filtro por matéria</div>
+            <select class="dash-select" id="analyticsSubjectFilter"></select>
+          </div>
+          <div class="field-group" style="max-width:160px;">
+            <div class="field-label">Período da análise</div>
+            <select class="dash-select" id="analyticsRange">
+              <option value="7">Últimos 7 dias</option>
+              <option value="14" selected>Últimos 14 dias</option>
+              <option value="30">Últimos 30 dias</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="analytics-summary" id="analyticsSummary"></div>
+      </div>
+
+      <div class="card col-12" style="--card-accent:var(--accent3)">
+        <div class="calendar-head">
+          <div>
+            <div class="card-label">🗓 Calendário mensal</div>
+            <div class="card-sub">Clique em um dia para ver o resumo.</div>
+          </div>
+          <div class="calendar-nav">
+            <button class="dash-btn secondary" id="prevMonthBtn">←</button>
+            <div class="pill" id="calendarMonthLabel">Mês</div>
+            <button class="dash-btn secondary" id="nextMonthBtn">→</button>
+          </div>
+        </div>
+        <div class="calendar-grid" id="calendarWeekdays"></div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+        <div class="calendar-detail" id="calendarDetail"></div>
+      </div>
+    </div>
+
+    <div class="section-title">📝 Registrar sessão de estudo</div>
+    <div class="grid">
+      <div class="card col-12" style="--card-accent:var(--accent)">
+        <div class="row-fields" style="margin-bottom:14px;">
+          <div class="field-group" style="min-width:160px;max-width:200px;">
+            <div class="field-label">Data</div>
+            <input class="dash-input" type="date" id="sessionDate">
+          </div>
+          <div class="field-group" style="flex:2; min-width:180px;">
+            <div class="field-label">Matéria estudada</div>
+            <select class="dash-select" id="sessionSubject"></select>
+          </div>
+          <div class="field-group" id="customSubjectWrap" style="flex:2; min-width:180px; display:none;">
+            <div class="field-label">Especificar “Outros”</div>
+            <input class="dash-input" id="customSubjectInput" placeholder="ex: Bioestatística">
+          </div>
+          <div class="field-group" style="min-width:90px;max-width:110px;">
+            <div class="field-label">Horas</div>
+            <input class="dash-input" type="number" id="sessionHours" placeholder="0" min="0" max="24" step="1">
+          </div>
+          <div class="field-group" style="min-width:100px;max-width:120px;">
+            <div class="field-label">Minutos</div>
+            <input class="dash-input" type="number" id="sessionMinutes" placeholder="00" min="0" max="59" step="1">
+          </div>
+          <div class="field-group" style="min-width:90px;">
+            <div class="field-label">Questões certas</div>
+            <input class="dash-input" type="number" id="sessionCorrect" placeholder="0" min="0">
+          </div>
+          <div class="field-group" style="min-width:90px;">
+            <div class="field-label">Questões erradas</div>
+            <input class="dash-input" type="number" id="sessionWrong" placeholder="0" min="0">
+          </div>
+        </div>
+
+        <div class="row-fields" style="margin-bottom:14px;">
+          <div class="field-group" style="flex:1; min-width:240px;">
+            <div class="field-label">😴 Como você começou a sessão?</div>
+            <div class="fadiga-opts" id="fatigueStartWrap">
+              <button type="button" class="fadiga-btn" data-group="start" data-value="descansado"><span class="emoji">😊</span>Descansado</button>
+              <button type="button" class="fadiga-btn" data-group="start" data-value="pouco"><span class="emoji">😐</span>Pouco cansado</button>
+              <button type="button" class="fadiga-btn" data-group="start" data-value="muito"><span class="emoji">😩</span>Muito cansado</button>
+            </div>
+          </div>
+
+          <div class="field-group" style="flex:1; min-width:240px;">
+            <div class="field-label">🏁 Como você terminou a sessão?</div>
+            <div class="fadiga-opts" id="fatigueEndWrap">
+              <button type="button" class="fadiga-btn" data-group="end" data-value="pouco"><span class="emoji">🙂</span>Pouco cansado</button>
+              <button type="button" class="fadiga-btn" data-group="end" data-value="meio"><span class="emoji">😶</span>Meio cansado</button>
+              <button type="button" class="fadiga-btn" data-group="end" data-value="muito"><span class="emoji">🥵</span>Muito cansado</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-group" style="margin-bottom:14px;">
+          <div class="field-label">Observação opcional</div>
+          <textarea class="dash-textarea" id="sessionNote" placeholder="ex: revisei legislação e senti mais dificuldade em fixar os artigos."></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap;">
+          <button class="dash-btn secondary" id="clearSessionBtn">Limpar</button>
+          <button class="dash-btn" id="saveSessionBtn">＋ Registrar sessão</button>
+        </div>
+
+        <div id="todayLog" style="margin-top:6px;"></div>
+      </div>
+    </div>
+
+    <div class="section-title">😔 Não estudou em algum dia?</div>
+    <div class="grid">
+      <div class="card col-12" style="--card-accent:var(--accent2)">
+        <div class="row-fields">
+          <div class="field-group" style="max-width:200px;">
+            <div class="field-label">Data</div>
+            <input class="dash-input" type="date" id="absenceDate">
+          </div>
+          <div class="field-group" style="flex:1; min-width:220px;">
+            <div class="field-label">Justificativa</div>
+            <input class="dash-input" id="absenceReason" placeholder="ex: plantão noturno, viagem, exaustão...">
+          </div>
+          <div style="display:flex; align-items:end;">
+            <button class="dash-btn" style="background:var(--accent2);" id="saveAbsenceBtn">Registrar ausência</button>
+          </div>
+        </div>
+        <div id="absenceLog"></div>
+      </div>
+    </div>
+
+    <div class="section-title">💬 Motivação</div>
+    <div class="grid">
+      <div class="card quote-card col-12">
+        <div class="card-label">Combustível do dia</div>
+        <div class="quote-text" id="quoteText"></div>
+        <div class="footer-note">Os dados ficam salvos no seu navegador e, se você configurar o Supabase, também podem ser sincronizados entre dispositivos.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="goalsModal">
+    <div class="modal">
+      <h3>✏️ Editar metas diárias</h3>
+      <div id="goalsModalList"></div>
+      <div class="modal-actions">
+        <button class="dash-btn secondary" id="addGoalBtn">＋ Nova meta</button>
+        <button class="dash-btn" id="saveGoalsBtn" style="margin-left:auto;">Salvar</button>
+        <button class="dash-btn secondary" id="closeGoalsBtn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const STORAGE_KEY = 'sam.study.dashboard.v4';
+    const CLOUD_CONFIG_KEY = 'sam.study.dashboard.cloud.v1';
+    const CLOUD_TABLE = 'dashboard_state';
+    const DEFAULT_SUBJECTS = ['Específicas','Português','SUS','Legislação Específica','Simulados','Outros'];
+    const DEFAULT_GOALS = [
+      'Videoaulas da manhã',
+      'Revisão da tarde',
+      'Questões do dia',
+      'Revisão ativa / flashcards',
+      'Exercício físico / autocuidado'
+    ];
+    const SUBJECT_COLORS = {
+      'Específicas':'#7c6af7',
+      'Português':'#f7c86a',
+      'SUS':'#6af7c8',
+      'Legislação Específica':'#f76a8a',
+      'Simulados':'#a8f76a',
+      'Outros':'#f7a06a'
+    };
+    const QUOTES = [
+      'Disciplina vence motivação quando o dia pesa.',
+      'Pequenas sessões somadas viram aprovação.',
+      'Feito com consistência vale mais que perfeito.',
+      'Hoje não precisa ser épico. Precisa acontecer.',
+      'Cada questão corrigida te aproxima da vaga.',
+      'Estudar cansada ainda é avançar.',
+      'A aprovação começa nos dias comuns.',
+      'Constância silenciosa também dá resultado.',
+      'Seu progresso de hoje não precisa impressionar ninguém — só precisa existir.',
+      'Uma sessão boa já muda o rumo do dia.'
+    ];
+    const DAYS_FULL = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+    const DAYS_SHORT = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+    const DAYS_MINI = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+    const MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+    let state = getDefaultState();
+    let formFatigue = { start:'', end:'' };
+    let analyticsState = { subject:'__all__', range:14 };
+    let calendarState = { view:new Date(), selectedDateKey:null };
+    let timerInterval = null;
+    let timer = getDefaultTimerState();
+    let autoSyncTimeout = null;
+    let cloud = getDefaultCloudState();
+
+    function getDefaultState(){
+      return {
+        settings:{
+          dailyGoalHours:7,
+          subjects:[...DEFAULT_SUBJECTS],
+          dailyGoals:[...DEFAULT_GOALS]
+        },
+        sessions:[],
+        absences:[],
+        dailyGoalChecks:{}
+      };
+    }
+
+    function getDefaultTimerState(){
+      return {
+        mode:'pomodoro',
+        focusMinutes:25,
+        breakMinutes:5,
+        isRunning:false,
+        phase:'focus',
+        remainingMs:25*60*1000,
+        elapsedStudyMs:0,
+        completedPomodoros:0,
+        lastTick:null
+      };
+    }
+
+
+    function getDefaultCloudState(){
+      return {
+        config:{
+          projectUrl:'',
+          anonKey:'',
+          email:'',
+          autoSync:false
+        },
+        client:null,
+        user:null,
+        isReady:false,
+        busy:false,
+        lastMessage:'Modo local ativo. Configure o Supabase para sincronizar entre dispositivos.',
+        lastSyncAt:'',
+        authSubscription:null
+      };
+    }
+
+    function todayDate(){
+      const d = new Date();
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    }
+    function dateToKey(dateObj){
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth()+1).padStart(2,'0');
+      const d = String(dateObj.getDate()).padStart(2,'0');
+      return `${y}-${m}-${d}`;
+    }
+    function keyToDate(key){
+      const [y,m,d] = key.split('-').map(Number);
+      return new Date(y, m-1, d);
+    }
+    function shiftDate(base, days){
+      const d = new Date(base);
+      d.setDate(d.getDate()+days);
+      return d;
+    }
+    function formatDateLong(dateObj){
+      return `${DAYS_SHORT[dateObj.getDay()]} · ${MONTHS_PT[dateObj.getMonth()].slice(0,3).toUpperCase()} ${dateObj.getFullYear()}`;
+    }
+    function formatDateShort(dateObj){
+      return `${String(dateObj.getDate()).padStart(2,'0')}/${String(dateObj.getMonth()+1).padStart(2,'0')}`;
+    }
+    function formatDateFullBR(dateObj){
+      return `${String(dateObj.getDate()).padStart(2,'0')}/${String(dateObj.getMonth()+1).padStart(2,'0')}/${dateObj.getFullYear()}`;
+    }
+    function escapeHtml(value=''){
+      return String(value)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#39;');
+    }
+    function normalizeNumber(value){
+      const n = Number(value);
+      return Number.isFinite(n) ? n : 0;
+    }
+    function round1(n){ return Math.round(n*10)/10; }
+    function clampInt(value, min, max){
+      const n = parseInt(value ?? '0', 10);
+      if (!Number.isFinite(n)) return min;
+      return Math.min(max, Math.max(min, n));
+    }
+    function getDecimalHoursFromInputs(hoursId, minutesId){
+      const hours = clampInt(document.getElementById(hoursId)?.value, 0, 24);
+      const minutes = clampInt(document.getElementById(minutesId)?.value, 0, 59);
+      return round1(hours + (minutes / 60));
+    }
+    function setInputsFromDecimalHours(hoursId, minutesId, decimalHours){
+      const safe = Math.max(0, normalizeNumber(decimalHours));
+      const totalMinutes = Math.round(safe * 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      const hoursEl = document.getElementById(hoursId);
+      const minutesEl = document.getElementById(minutesId);
+      if (hoursEl) hoursEl.value = hours ? String(hours) : '';
+      if (minutesEl) minutesEl.value = minutes ? String(minutes).padStart(2,'0') : '';
+    }
+    function formatHours(n){
+      const safe = Math.max(0, normalizeNumber(n));
+      const totalMinutes = Math.round(safe * 60);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      if (!hours && !minutes) return '0h';
+      if (!minutes) return `${hours}h`;
+      if (!hours) return `${minutes}min`;
+      return `${hours}h ${String(minutes).padStart(2,'0')}min`;
+    }
+    function formatPercent(num, den){
+      return den ? `${Math.round((num/den)*100)}%` : '—';
+    }
+    function getSubjectColor(subject){
+      return SUBJECT_COLORS[subject] || '#7c6af7';
+    }
+
+    function saveCloudConfig(){
+      localStorage.setItem(CLOUD_CONFIG_KEY, JSON.stringify({
+        projectUrl: cloud.config.projectUrl,
+        anonKey: cloud.config.anonKey,
+        email: cloud.config.email,
+        autoSync: !!cloud.config.autoSync,
+        lastSyncAt: cloud.lastSyncAt || ''
+      }));
+    }
+
+    function loadCloudConfig(){
+      const raw = localStorage.getItem(CLOUD_CONFIG_KEY);
+      if (!raw) return;
+      try{
+        const parsed = JSON.parse(raw);
+        cloud.config.projectUrl = parsed?.projectUrl || '';
+        cloud.config.anonKey = parsed?.anonKey || '';
+        cloud.config.email = parsed?.email || '';
+        cloud.config.autoSync = !!parsed?.autoSync;
+        cloud.lastSyncAt = parsed?.lastSyncAt || '';
+      }catch(err){
+        console.error('Erro ao carregar configuração da nuvem', err);
+      }
+    }
+
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        state,
+        analyticsState,
+        calendarState:{
+          view: dateToKey(new Date(calendarState.view.getFullYear(), calendarState.view.getMonth(), 1)),
+          selectedDateKey: calendarState.selectedDateKey
+        },
+        timer: {
+          mode: timer.mode,
+          focusMinutes: timer.focusMinutes,
+          breakMinutes: timer.breakMinutes,
+          completedPomodoros: timer.completedPomodoros,
+          elapsedStudyMs: timer.elapsedStudyMs
+        }
+      }));
+      queueCloudSync();
+    }
+
+    function loadState(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try{
+        const parsed = JSON.parse(raw);
+        const savedState = parsed.state || {};
+        state = {
+          settings:{
+            dailyGoalHours: normalizeNumber(savedState?.settings?.dailyGoalHours) || 7,
+            subjects: Array.isArray(savedState?.settings?.subjects) && savedState.settings.subjects.length ? savedState.settings.subjects : [...DEFAULT_SUBJECTS],
+            dailyGoals: Array.isArray(savedState?.settings?.dailyGoals) && savedState.settings.dailyGoals.length ? savedState.settings.dailyGoals : [...DEFAULT_GOALS]
+          },
+          sessions: Array.isArray(savedState?.sessions) ? savedState.sessions : [],
+          absences: Array.isArray(savedState?.absences) ? savedState.absences : [],
+          dailyGoalChecks: savedState?.dailyGoalChecks && typeof savedState.dailyGoalChecks === 'object' ? savedState.dailyGoalChecks : {}
+        };
+        analyticsState = {
+          subject: parsed?.analyticsState?.subject || '__all__',
+          range: [7,14,30].includes(Number(parsed?.analyticsState?.range)) ? Number(parsed.analyticsState.range) : 14
+        };
+        if (parsed?.calendarState?.view){
+          calendarState.view = keyToDate(parsed.calendarState.view);
+        }
+        calendarState.selectedDateKey = parsed?.calendarState?.selectedDateKey || dateToKey(todayDate());
+        timer.mode = parsed?.timer?.mode === 'stopwatch' ? 'stopwatch' : 'pomodoro';
+        timer.focusMinutes = normalizeNumber(parsed?.timer?.focusMinutes) || 25;
+        timer.breakMinutes = normalizeNumber(parsed?.timer?.breakMinutes) || 5;
+        timer.completedPomodoros = normalizeNumber(parsed?.timer?.completedPomodoros) || 0;
+        timer.elapsedStudyMs = normalizeNumber(parsed?.timer?.elapsedStudyMs) || 0;
+      }catch(err){
+        console.error('Erro ao carregar dados salvos', err);
+      }
+    }
+
+    function buildCloudPayload(){
+      return {
+        appVersion:'v4-supabase-ready',
+        savedAt:new Date().toISOString(),
+        state,
+        analyticsState,
+        calendarState:{
+          view: dateToKey(new Date(calendarState.view.getFullYear(), calendarState.view.getMonth(), 1)),
+          selectedDateKey: calendarState.selectedDateKey
+        },
+        timer:{
+          mode: timer.mode,
+          focusMinutes: timer.focusMinutes,
+          breakMinutes: timer.breakMinutes,
+          completedPomodoros: timer.completedPomodoros,
+          elapsedStudyMs: timer.elapsedStudyMs
+        }
+      };
+    }
+
+    function applyCloudPayload(payload){
+      if (!payload || typeof payload !== 'object') return;
+      const parsed = payload;
+      const savedState = parsed.state || {};
+      state = {
+        settings:{
+          dailyGoalHours: normalizeNumber(savedState?.settings?.dailyGoalHours) || 7,
+          subjects: Array.isArray(savedState?.settings?.subjects) && savedState.settings.subjects.length ? savedState.settings.subjects : [...DEFAULT_SUBJECTS],
+          dailyGoals: Array.isArray(savedState?.settings?.dailyGoals) && savedState.settings.dailyGoals.length ? savedState.settings.dailyGoals : [...DEFAULT_GOALS]
+        },
+        sessions: Array.isArray(savedState?.sessions) ? savedState.sessions : [],
+        absences: Array.isArray(savedState?.absences) ? savedState.absences : [],
+        dailyGoalChecks: savedState?.dailyGoalChecks && typeof savedState.dailyGoalChecks === 'object' ? savedState.dailyGoalChecks : {}
+      };
+      analyticsState = {
+        subject: parsed?.analyticsState?.subject || '__all__',
+        range: [7,14,30].includes(Number(parsed?.analyticsState?.range)) ? Number(parsed.analyticsState.range) : 14
+      };
+      calendarState = {
+        view: parsed?.calendarState?.view ? keyToDate(parsed.calendarState.view) : new Date(),
+        selectedDateKey: parsed?.calendarState?.selectedDateKey || dateToKey(todayDate())
+      };
+      timer = getDefaultTimerState();
+      timer.mode = parsed?.timer?.mode === 'stopwatch' ? 'stopwatch' : 'pomodoro';
+      timer.focusMinutes = normalizeNumber(parsed?.timer?.focusMinutes) || 25;
+      timer.breakMinutes = normalizeNumber(parsed?.timer?.breakMinutes) || 5;
+      timer.completedPomodoros = normalizeNumber(parsed?.timer?.completedPomodoros) || 0;
+      timer.elapsedStudyMs = normalizeNumber(parsed?.timer?.elapsedStudyMs) || 0;
+      resetTimerForMode();
+      saveState();
+      renderAll();
+      resetSessionForm();
+      document.getElementById('absenceDate').value = dateToKey(todayDate());
+    }
+
+    async function initCloudClient({silent=false} = {}){
+      const url = cloud.config.projectUrl?.trim();
+      const anonKey = cloud.config.anonKey?.trim();
+      if (!url || !anonKey){
+        cloud.client = null;
+        cloud.user = null;
+        cloud.isReady = false;
+        cloud.lastMessage = 'Modo local ativo. Configure o Supabase para sincronizar entre dispositivos.';
+        renderSyncPanel();
+        return null;
+      }
+      if (!window.supabase || typeof window.supabase.createClient !== 'function'){
+        cloud.client = null;
+        cloud.user = null;
+        cloud.isReady = false;
+        cloud.lastMessage = 'Não consegui carregar o SDK do Supabase neste navegador.';
+        renderSyncPanel();
+        return null;
+      }
+      try{
+        cloud.client = window.supabase.createClient(url, anonKey);
+        cloud.isReady = true;
+        if (cloud.authSubscription?.unsubscribe) cloud.authSubscription.unsubscribe();
+        const authRes = cloud.client.auth.onAuthStateChange((_event, session) => {
+          cloud.user = session?.user || null;
+          renderSyncPanel();
+        });
+        cloud.authSubscription = authRes?.data?.subscription || null;
+        const { data } = await cloud.client.auth.getSession();
+        cloud.user = data?.session?.user || null;
+        if (!silent) cloud.lastMessage = cloud.user ? 'Supabase conectado e sessão restaurada.' : 'Supabase conectado. Faça login para sincronizar.';
+      }catch(err){
+        cloud.client = null;
+        cloud.user = null;
+        cloud.isReady = false;
+        cloud.lastMessage = `Falha ao conectar: ${err?.message || err}`;
+      }
+      renderSyncPanel();
+      return cloud.client;
+    }
+
+    function queueCloudSync(){
+      if (!(cloud.config.autoSync && cloud.isReady && cloud.user && cloud.client)) return;
+      clearTimeout(autoSyncTimeout);
+      autoSyncTimeout = setTimeout(() => {
+        cloudSyncUp({quiet:true});
+      }, 900);
+    }
+
+    async function saveCloudConfigFromInputs(){
+      cloud.config.projectUrl = document.getElementById('sbProjectUrl').value.trim();
+      cloud.config.anonKey = document.getElementById('sbAnonKey').value.trim();
+      cloud.config.email = document.getElementById('sbEmail').value.trim();
+      cloud.config.autoSync = !!document.getElementById('sbAutoSync').checked;
+      saveCloudConfig();
+      await initCloudClient();
+    }
+
+    async function clearCloudConfig(){
+      clearTimeout(autoSyncTimeout);
+      if (cloud.authSubscription?.unsubscribe) cloud.authSubscription.unsubscribe();
+      cloud.authSubscription = null;
+      cloud = getDefaultCloudState();
+      localStorage.removeItem(CLOUD_CONFIG_KEY);
+      renderSyncPanel();
+    }
+
+    async function cloudSignUp(){
+      await initCloudClient({silent:true});
+      if (!cloud.client){ alert('Salve primeiro a URL e a chave do Supabase.'); return; }
+      const email = document.getElementById('sbEmail').value.trim();
+      const password = document.getElementById('sbPassword').value;
+      if (!email || !password){ alert('Preencha e-mail e senha.'); return; }
+      cloud.config.email = email;
+      saveCloudConfig();
+      const { error } = await cloud.client.auth.signUp({ email, password });
+      if (error){
+        cloud.lastMessage = `Erro ao criar conta: ${error.message}`;
+      } else {
+        cloud.lastMessage = 'Conta criada. Se o projeto exigir confirmação por e-mail, verifique sua caixa de entrada antes de entrar.';
+      }
+      renderSyncPanel();
+    }
+
+    async function cloudSignIn(){
+      await initCloudClient({silent:true});
+      if (!cloud.client){ alert('Salve primeiro a URL e a chave do Supabase.'); return; }
+      const email = document.getElementById('sbEmail').value.trim();
+      const password = document.getElementById('sbPassword').value;
+      if (!email || !password){ alert('Preencha e-mail e senha.'); return; }
+      cloud.config.email = email;
+      saveCloudConfig();
+      const { error } = await cloud.client.auth.signInWithPassword({ email, password });
+      if (error){
+        cloud.lastMessage = `Erro no login: ${error.message}`;
+      } else {
+        cloud.lastMessage = 'Login feito. Agora você já pode enviar ou baixar seus dados da nuvem.';
+      }
+      renderSyncPanel();
+    }
+
+    async function cloudSignOut(){
+      if (!cloud.client) return;
+      const { error } = await cloud.client.auth.signOut();
+      cloud.user = null;
+      cloud.lastMessage = error ? `Erro ao sair: ${error.message}` : 'Sessão encerrada. O modo local continua ativo.';
+      renderSyncPanel();
+    }
+
+    async function cloudSyncUp({quiet=false} = {}){
+      await initCloudClient({silent:true});
+      if (!cloud.client || !cloud.user){
+        if (!quiet) alert('Faça login no Supabase para sincronizar.');
+        return;
+      }
+      try{
+        cloud.busy = true;
+        renderSyncPanel();
+        const payload = buildCloudPayload();
+        const { error } = await cloud.client.from(CLOUD_TABLE).upsert({
+          user_id: cloud.user.id,
+          payload,
+          updated_at: new Date().toISOString()
+        }, { onConflict:'user_id' });
+        if (error) throw error;
+        cloud.lastSyncAt = new Date().toISOString();
+        cloud.lastMessage = quiet ? 'Sincronização automática concluída.' : 'Dados enviados para a nuvem.';
+        saveCloudConfig();
+      }catch(err){
+        cloud.lastMessage = `Erro ao enviar: ${err?.message || err}`;
+        if (!quiet) alert(cloud.lastMessage);
+      }finally{
+        cloud.busy = false;
+        renderSyncPanel();
+      }
+    }
+
+    async function cloudSyncDown(){
+      await initCloudClient({silent:true});
+      if (!cloud.client || !cloud.user){ alert('Faça login no Supabase para baixar os dados.'); return; }
+      try{
+        cloud.busy = true;
+        renderSyncPanel();
+        const { data, error } = await cloud.client.from(CLOUD_TABLE).select('payload, updated_at').eq('user_id', cloud.user.id).maybeSingle();
+        if (error) throw error;
+        if (!data?.payload){
+          cloud.lastMessage = 'Não encontrei um dashboard salvo na nuvem para esta conta ainda.';
+          renderSyncPanel();
+          return;
+        }
+        cloud.lastSyncAt = data.updated_at || new Date().toISOString();
+        cloud.lastMessage = 'Dados baixados da nuvem e aplicados ao dashboard.';
+        saveCloudConfig();
+        applyCloudPayload(data.payload);
+      }catch(err){
+        cloud.lastMessage = `Erro ao baixar: ${err?.message || err}`;
+        alert(cloud.lastMessage);
+      }finally{
+        cloud.busy = false;
+        renderSyncPanel();
+      }
+    }
+
+    function renderSyncPanel(){
+      document.getElementById('sbProjectUrl').value = cloud.config.projectUrl || '';
+      document.getElementById('sbAnonKey').value = cloud.config.anonKey || '';
+      document.getElementById('sbEmail').value = cloud.config.email || document.getElementById('sbEmail').value || '';
+      document.getElementById('sbAutoSync').checked = !!cloud.config.autoSync;
+      document.getElementById('cloudModePill').textContent = cloud.isReady ? 'supabase pronto' : 'modo local';
+      document.getElementById('sbUserPill').textContent = cloud.user?.email ? `logada: ${cloud.user.email}` : 'sem login';
+      document.getElementById('sbLastSyncPill').textContent = cloud.lastSyncAt ? `último sync: ${new Date(cloud.lastSyncAt).toLocaleString('pt-BR')}` : 'sem sync';
+      const msg = cloud.busy ? 'Processando sincronização...' : (cloud.lastMessage || 'Modo local ativo.');
+      document.getElementById('sbStatusText').textContent = msg;
+      document.getElementById('sbSyncUpBtn').disabled = !(cloud.isReady && cloud.user && !cloud.busy);
+      document.getElementById('sbSyncDownBtn').disabled = !(cloud.isReady && cloud.user && !cloud.busy);
+      document.getElementById('sbSignOutBtn').disabled = !(cloud.isReady && cloud.user && !cloud.busy);
+      document.getElementById('sbSignInBtn').disabled = !cloud.isReady || cloud.busy;
+      document.getElementById('sbSignUpBtn').disabled = !cloud.isReady || cloud.busy;
+    }
+
+    function getAllSubjects(){
+      const customFromSessions = state.sessions.map(s => s.subject).filter(Boolean);
+      return [...new Set([...state.settings.subjects, ...customFromSessions])].sort((a,b)=>a.localeCompare(b, 'pt-BR'));
+    }
+
+    function getSessionsByDate(dateKey){
+      return state.sessions
+        .filter(s => s.date === dateKey)
+        .sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    function getAbsencesByDate(dateKey){
+      return state.absences.filter(a => a.date === dateKey);
+    }
+    function aggregateSessions(dateKey, subjectFilter='__all__'){
+      const sessions = getSessionsByDate(dateKey).filter(s => subjectFilter === '__all__' || s.subject === subjectFilter);
+      const bySubject = {};
+      let hours = 0, correct = 0, wrong = 0;
+
+      for (const s of sessions){
+        const h = normalizeNumber(s.hours);
+        const c = normalizeNumber(s.correct);
+        const w = normalizeNumber(s.wrong);
+        hours += h; correct += c; wrong += w;
+        if (!bySubject[s.subject]) bySubject[s.subject] = { subject:s.subject, hours:0, correct:0, wrong:0 };
+        bySubject[s.subject].hours += h;
+        bySubject[s.subject].correct += c;
+        bySubject[s.subject].wrong += w;
+      }
+
+      return {
+        sessions,
+        bySubject: Object.values(bySubject).sort((a,b)=> (b.correct+b.wrong) - (a.correct+a.wrong) || b.hours - a.hours || a.subject.localeCompare(b.subject, 'pt-BR')),
+        hours: round1(hours),
+        correct,
+        wrong,
+        totalQuestions: correct + wrong
+      };
+    }
+
+    function getStudyDateSet(){
+      const set = new Set();
+      state.sessions.forEach(s => {
+        if ((normalizeNumber(s.hours) > 0 || normalizeNumber(s.correct) > 0 || normalizeNumber(s.wrong) > 0) && s.date){
+          set.add(s.date);
+        }
+      });
+      return set;
+    }
+
+    function computeStreaks(){
+      const set = getStudyDateSet();
+      const sortedKeys = [...set].sort();
+      let record = 0;
+      let currentRun = 0;
+      let prev = null;
+      for (const key of sortedKeys){
+        const current = keyToDate(key);
+        if (!prev) currentRun = 1;
+        else {
+          const diff = Math.round((current - prev)/86400000);
+          currentRun = diff === 1 ? currentRun + 1 : 1;
+        }
+        record = Math.max(record, currentRun);
+        prev = current;
+      }
+
+      const todayKey = dateToKey(todayDate());
+      const yesterdayKey = dateToKey(shiftDate(todayDate(), -1));
+      let current = 0;
+      let anchor = null;
+      if (set.has(todayKey)) anchor = keyToDate(todayKey);
+      else if (set.has(yesterdayKey)) anchor = keyToDate(yesterdayKey);
+      if (anchor){
+        while(set.has(dateToKey(anchor))){
+          current += 1;
+          anchor = shiftDate(anchor, -1);
+        }
+      }
+      return { current, record };
+    }
+
+    function getLast30DaysPattern(){
+      const pattern = [];
+      const set = getStudyDateSet();
+      const today = todayDate();
+      for (let i=29;i>=0;i--){
+        const d = shiftDate(today, -i);
+        const key = dateToKey(d);
+        pattern.push({ key, isToday:key===dateToKey(today), done:set.has(key) });
+      }
+      return pattern;
+    }
+
+    function getCurrentWeekDates(){
+      const today = todayDate();
+      const day = today.getDay();
+      const mondayOffset = day === 0 ? -6 : 1 - day;
+      const monday = shiftDate(today, mondayOffset);
+      return Array.from({length:7}, (_,i)=> shiftDate(monday, i));
+    }
+
+    function getDistribution(){
+      const map = {};
+      let totalHours = 0;
+      for (const s of state.sessions){
+        const h = normalizeNumber(s.hours);
+        if (h <= 0) continue;
+        totalHours += h;
+        map[s.subject] = (map[s.subject] || 0) + h;
+      }
+      const list = Object.entries(map).map(([subject, hours]) => ({
+        subject,
+        hours: round1(hours),
+        color: getSubjectColor(subject)
+      })).sort((a,b)=>b.hours - a.hours || a.subject.localeCompare(b.subject, 'pt-BR'));
+      return { totalHours: round1(totalHours), list };
+    }
+
+    function quoteOfTheDay(){
+      const t = todayDate();
+      const seed = Number(`${t.getFullYear()}${t.getMonth()+1}${t.getDate()}`);
+      return QUOTES[seed % QUOTES.length];
+    }
+
+    function renderHeader(){
+      const now = todayDate();
+      document.getElementById('dayNum').textContent = String(now.getDate()).padStart(2,'0');
+      document.getElementById('dayLabel').textContent = formatDateLong(now);
+      document.getElementById('todayDatePill').textContent = formatDateShort(now);
+      document.getElementById('quoteText').textContent = quoteOfTheDay();
+    }
+
+    function renderDayCards(){
+      const goal = state.settings.dailyGoalHours;
+      const todayKey = dateToKey(todayDate());
+      const yesterdayKey = dateToKey(shiftDate(todayDate(), -1));
+
+      renderHoursBlock({
+        ...aggregateSessions(todayKey),
+        goal,
+        hoursValueEl:'tHoursValue', hoursSubEl:'tHoursSub', hoursMetaEl:'tHoursMeta', hoursBarEl:'tHoursBar',
+        qTotalEl:'tQTotal', qCorrectEl:'tQCorrect', qWrongEl:'tQWrong', qPctEl:'tQPct',
+        tableBodyEl:'tTableBody', sessionCountEl:'tSessionCount'
+      });
+
+      renderHoursBlock({
+        ...aggregateSessions(yesterdayKey),
+        goal,
+        hoursValueEl:'yHoursValue', hoursSubEl:'yHoursSub', hoursMetaEl:'yHoursMeta', hoursBarEl:'yHoursBar',
+        qTotalEl:'yQTotal', qCorrectEl:'yQCorrect', qWrongEl:'yQWrong', qPctEl:'yQPct',
+        tableBodyEl:'yTableBody', sessionCountEl:'ySessionCount'
+      });
+    }
+
+    function renderHoursBlock(cfg){
+      const pct = cfg.goal > 0 ? Math.min((cfg.hours / cfg.goal) * 100, 100) : 0;
+      const remaining = Math.max(cfg.goal - cfg.hours, 0);
+
+      document.getElementById(cfg.hoursValueEl).textContent = formatHours(cfg.hours);
+      document.getElementById(cfg.hoursMetaEl).textContent = `meta: ${formatHours(cfg.goal)}`;
+      document.getElementById(cfg.hoursBarEl).style.width = `${pct}%`;
+
+      let sub = `Meta: ${formatHours(cfg.goal)} · <span class="muted">nenhuma sessão ainda</span>`;
+      if (cfg.hours > 0){
+        sub = remaining > 0
+          ? `Meta: ${formatHours(cfg.goal)} · <span class="danger">faltam ${formatHours(remaining)}</span>`
+          : `Meta: ${formatHours(cfg.goal)} · <span class="success">meta atingida ✓</span>`;
+      }
+      document.getElementById(cfg.hoursSubEl).innerHTML = sub;
+
+      document.getElementById(cfg.qTotalEl).textContent = cfg.totalQuestions;
+      document.getElementById(cfg.qCorrectEl).textContent = cfg.correct;
+      document.getElementById(cfg.qWrongEl).textContent = cfg.wrong;
+      document.getElementById(cfg.qPctEl).textContent = formatPercent(cfg.correct, cfg.totalQuestions);
+      document.getElementById(cfg.sessionCountEl).textContent = `${cfg.sessions.length} ${cfg.sessions.length === 1 ? 'sessão' : 'sessões'}`;
+
+      const tbody = document.getElementById(cfg.tableBodyEl);
+      tbody.innerHTML = '';
+      if (!cfg.bySubject.length){
+        tbody.innerHTML = '<tr><td colspan="5" class="muted" style="padding:12px 6px;">Nenhum registro nesse dia.</td></tr>';
+        return;
+      }
+
+      for (const row of cfg.bySubject){
+        const total = row.correct + row.wrong;
+        const pctVal = total ? Math.round((row.correct/total)*100) : 0;
+        const color = getSubjectColor(row.subject);
+        tbody.innerHTML += `
+          <tr>
+            <td><span class="subject-chip"><span class="dot" style="background:${color}"></span>${escapeHtml(row.subject)}</span></td>
+            <td>${total}</td>
+            <td class="accent3">${row.correct}</td>
+            <td class="accent2">${row.wrong}</td>
+            <td>
+              <span class="accent4">${pctVal}%</span>
+              <div class="pct-bar"><div class="pct-fill" style="width:${pctVal}%;background:${color}"></div></div>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function renderStreak(){
+      const { current, record } = computeStreaks();
+      document.getElementById('streakValue').textContent = `${current} ${current === 1 ? 'dia' : 'dias'}`;
+      document.getElementById('recordPill').textContent = `recorde: ${record}`;
+      document.getElementById('streakSub').textContent = current ? 'Sequência contada até o último dia com estudo registrado.' : 'Registre sua primeira sessão para iniciar a sequência.';
+
+      const dots = document.getElementById('streakDots');
+      dots.innerHTML = '';
+      getLast30DaysPattern().forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'streak-dot ' + (item.isToday && item.done ? 'dot-today' : item.done ? 'dot-done' : 'dot-empty');
+        div.title = `${item.key} · ${item.done ? 'com estudo' : 'sem estudo'}`;
+        div.textContent = item.done ? '✓' : '·';
+        dots.appendChild(div);
+      });
+    }
+
+    function renderWeekChart(){
+      const weekStats = getCurrentWeekDates().map((dateObj, idx) => {
+        const agg = aggregateSessions(dateToKey(dateObj));
+        return {
+          dateObj,
+          label: DAYS_MINI[idx],
+          hours: agg.hours,
+          today: dateToKey(dateObj) === dateToKey(todayDate())
+        };
+      });
+      const maxVal = Math.max(state.settings.dailyGoalHours, ...weekStats.map(x=>x.hours), 1);
+      const chart = document.getElementById('weekChart');
+      chart.innerHTML = '';
+      document.getElementById('weekRangePill').textContent = `${formatDateShort(weekStats[0].dateObj)}–${formatDateShort(weekStats[6].dateObj)}`;
+
+      weekStats.forEach(item => {
+        const height = Math.max((item.hours/maxVal)*100, 8);
+        const col = document.createElement('div');
+        col.className = 'bar-col';
+        col.innerHTML = `<span class="bar-val">${item.hours ? formatHours(item.hours) : ''}</span><div class="bar ${item.today ? 'today' : ''} ${item.hours===0 ? 'empty' : ''}" style="height:${height}%"></div><span class="bar-day">${item.label}</span>`;
+        chart.appendChild(col);
+      });
+    }
+
+    function renderDistribution(){
+      const { totalHours, list } = getDistribution();
+      document.getElementById('distHoursPill').textContent = `${formatHours(totalHours)} totais`;
+      document.getElementById('donutCenterValue').textContent = formatHours(totalHours);
+
+      const svg = document.getElementById('donutSvg');
+      svg.innerHTML = '<circle cx="60" cy="60" r="38" fill="none" stroke="#1a1a26" stroke-width="16"></circle>';
+      const legend = document.getElementById('donutLegend');
+      legend.innerHTML = '';
+
+      if (!list.length){
+        legend.innerHTML = '<div class="empty-state">Quando você começar a registrar horas, a distribuição por matéria vai aparecer aqui.</div>';
+        return;
+      }
+
+      const circumference = 2 * Math.PI * 38;
+      let offset = 0;
+      list.forEach(item => {
+        const pct = totalHours ? item.hours / totalHours : 0;
+        const dash = pct * circumference;
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx','60');
+        circle.setAttribute('cy','60');
+        circle.setAttribute('r','38');
+        circle.setAttribute('fill','none');
+        circle.setAttribute('stroke', item.color);
+        circle.setAttribute('stroke-width','16');
+        circle.setAttribute('stroke-dasharray', `${dash} ${circumference}`);
+        circle.setAttribute('stroke-dashoffset', String(-offset));
+        circle.setAttribute('transform','rotate(-90 60 60)');
+        svg.appendChild(circle);
+        offset += dash;
+
+        const row = document.createElement('div');
+        row.className = 'legend-item';
+        row.innerHTML = `<span class="dot" style="background:${item.color}"></span><span>${escapeHtml(item.subject)}</span><span class="legend-val">${Math.round(pct*100)}%</span>`;
+        legend.appendChild(row);
+      });
+    }
+
+    function renderGoals(){
+      setInputsFromDecimalHours('dailyGoalHoursInput', 'dailyGoalMinutesInput', state.settings.dailyGoalHours);
+      const dateKey = dateToKey(todayDate());
+      const doneList = Array.isArray(state.dailyGoalChecks[dateKey]) ? state.dailyGoalChecks[dateKey] : [];
+      const wrap = document.getElementById('goalsList');
+      wrap.innerHTML = '';
+
+      state.settings.dailyGoals.forEach((goal, index) => {
+        const row = document.createElement('div');
+        row.className = 'meta-row';
+        row.innerHTML = `<div class="meta-name">${escapeHtml(goal)}</div><button type="button" class="meta-check ${doneList.includes(index) ? 'done' : ''}" data-goal-check="${index}">${doneList.includes(index) ? '✓' : ''}</button>`;
+        wrap.appendChild(row);
+      });
+
+      wrap.querySelectorAll('[data-goal-check]').forEach(btn => {
+        btn.addEventListener('click', () => toggleGoalCheck(Number(btn.dataset.goalCheck)));
+      });
+    }
+
+    function toggleGoalCheck(index){
+      const key = dateToKey(todayDate());
+      const current = Array.isArray(state.dailyGoalChecks[key]) ? [...state.dailyGoalChecks[key]] : [];
+      const idx = current.indexOf(index);
+      if (idx === -1) current.push(index);
+      else current.splice(idx,1);
+      state.dailyGoalChecks[key] = current.sort((a,b)=>a-b);
+      saveState();
+      renderGoals();
+    }
+
+    function openGoalsModal(){
+      const wrap = document.getElementById('goalsModalList');
+      wrap.innerHTML = '';
+      state.settings.dailyGoals.forEach((goal, index) => {
+        const row = document.createElement('div');
+        row.className = 'modal-meta-item';
+        row.innerHTML = `<input class="dash-input" data-goal-input="${index}" value="${escapeHtml(goal)}"><button class="dash-btn danger" type="button" data-remove-goal="${index}">Remover</button>`;
+        wrap.appendChild(row);
+      });
+      document.getElementById('goalsModal').classList.add('open');
+
+      wrap.querySelectorAll('[data-remove-goal]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const i = Number(btn.dataset.removeGoal);
+          state.settings.dailyGoals.splice(i,1);
+          Object.keys(state.dailyGoalChecks).forEach(dateKey => {
+            const arr = Array.isArray(state.dailyGoalChecks[dateKey]) ? state.dailyGoalChecks[dateKey] : [];
+            state.dailyGoalChecks[dateKey] = arr.filter(x => x !== i).map(x => x > i ? x - 1 : x);
+          });
+          openGoalsModal();
+        });
+      });
+    }
+
+    function closeGoalsModal(){
+      document.getElementById('goalsModal').classList.remove('open');
+    }
+
+    function saveGoalsFromModal(){
+      const inputs = [...document.querySelectorAll('[data-goal-input]')];
+      const next = inputs.map(i => i.value.trim()).filter(Boolean);
+      state.settings.dailyGoals = next.length ? next : [...DEFAULT_GOALS];
+      saveState();
+      closeGoalsModal();
+      renderGoals();
+    }
+
+    function renderSubjectSelects(){
+      const subjects = getAllSubjects();
+      const sessionSelect = document.getElementById('sessionSubject');
+      const analyticsSelect = document.getElementById('analyticsSubjectFilter');
+
+      sessionSelect.innerHTML = '<option value="">— selecione —</option>';
+      subjects.forEach(subject => {
+        sessionSelect.innerHTML += `<option value="${escapeHtml(subject)}">${escapeHtml(subject)}</option>`;
+      });
+      if (!subjects.includes('Outros')){
+        sessionSelect.innerHTML += '<option value="Outros">Outros</option>';
+      }
+
+      analyticsSelect.innerHTML = '<option value="__all__">Todas as matérias</option>';
+      subjects.forEach(subject => {
+        analyticsSelect.innerHTML += `<option value="${escapeHtml(subject)}">${escapeHtml(subject)}</option>`;
+      });
+      analyticsSelect.value = subjects.includes(analyticsState.subject) || analyticsState.subject === '__all__' ? analyticsState.subject : '__all__';
+      analyticsState.subject = analyticsSelect.value;
+    }
+
+    function renderLogs(){
+      const wrap = document.getElementById('todayLog');
+      const sessions = getSessionsByDate(dateToKey(todayDate())).slice().sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+      if (!sessions.length){
+        wrap.innerHTML = '<div class="empty-state">As sessões registradas de hoje aparecem aqui. Você pode excluir qualquer uma delas.</div>';
+        return;
+      }
+
+      wrap.innerHTML = '<div style="font-size:10px;color:var(--muted);margin-top:14px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Sessões registradas hoje</div>';
+      sessions.forEach(s => {
+        const total = normalizeNumber(s.correct) + normalizeNumber(s.wrong);
+        const pct = total ? Math.round((normalizeNumber(s.correct)/total)*100) : null;
+        const color = getSubjectColor(s.subject);
+        wrap.innerHTML += `
+          <div class="log-entry" style="border-left-color:${color}">
+            <div class="log-top">
+              <div class="log-time">🕐 ${new Date(s.createdAt).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>
+              <div class="log-actions">
+                <button class="dash-btn danger" type="button" data-delete-session="${s.id}">Excluir</button>
+              </div>
+            </div>
+            <div class="log-row">
+              <div class="log-item"><span class="lk">Matéria</span><span class="lv" style="color:${color}">${escapeHtml(s.subject)}</span></div>
+              <div class="log-item"><span class="lk">Horas</span><span class="lv">${formatHours(normalizeNumber(s.hours))}</span></div>
+              <div class="log-item"><span class="lk">Questões</span><span class="lv">${normalizeNumber(s.correct)}✓ ${normalizeNumber(s.wrong)}✗ ${pct !== null ? '('+pct+'%)' : ''}</span></div>
+              ${s.fatigueStart ? `<div class="log-item"><span class="lk">Início</span><span class="lv">${escapeHtml(s.fatigueStart)}</span></div>` : ''}
+              ${s.fatigueEnd ? `<div class="log-item"><span class="lk">Final</span><span class="lv">${escapeHtml(s.fatigueEnd)}</span></div>` : ''}
+              ${s.note ? `<div class="log-item" style="min-width:220px;flex:1;"><span class="lk">Observação</span><span class="lv">${escapeHtml(s.note)}</span></div>` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      wrap.querySelectorAll('[data-delete-session]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.deleteSession;
+          state.sessions = state.sessions.filter(s => s.id !== id);
+          saveState();
+          renderAll();
+        });
+      });
+    }
+
+    function renderAbsences(){
+      const wrap = document.getElementById('absenceLog');
+      const list = [...state.absences].sort((a,b)=> b.date.localeCompare(a.date));
+      if (!list.length){
+        wrap.innerHTML = '<div class="empty-state">Se algum dia não render, você pode registrar a ausência aqui.</div>';
+        return;
+      }
+      wrap.innerHTML = '<div style="font-size:10px;color:var(--muted);margin-top:14px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;">Registros de ausência</div>';
+      list.forEach(a => {
+        wrap.innerHTML += `
+          <div class="absence-entry">
+            <div class="log-top">
+              <div class="log-time">📅 ${a.date.split('-').reverse().join('/')}</div>
+              <div class="log-actions">
+                <button class="dash-btn danger" type="button" data-delete-absence="${a.id}">Excluir</button>
+              </div>
+            </div>
+            <div>${escapeHtml(a.reason)}</div>
+          </div>
+        `;
+      });
+
+      wrap.querySelectorAll('[data-delete-absence]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.deleteAbsence;
+          state.absences = state.absences.filter(a => a.id !== id);
+          saveState();
+          renderAll();
+        });
+      });
+    }
+
+    function getAnalyticsSeries(subject, range){
+      const today = todayDate();
+      const list = [];
+      for (let i = range - 1; i >= 0; i--){
+        const d = shiftDate(today, -i);
+        const key = dateToKey(d);
+        const agg = aggregateSessions(key, subject);
+        list.push({
+          key,
+          label: formatDateShort(d),
+          hours: agg.hours,
+          correct: agg.correct,
+          wrong: agg.wrong,
+          total: agg.totalQuestions,
+          accuracy: agg.totalQuestions ? Math.round((agg.correct/agg.totalQuestions)*100) : null
+        });
+      }
+      return list;
+    }
+
+    function renderAnalyticsSummary(){
+      const subject = analyticsState.subject;
+      const range = analyticsState.range;
+      const series = getAnalyticsSeries(subject, range);
+      const totalHours = round1(series.reduce((sum, d)=>sum + d.hours, 0));
+      const correct = series.reduce((sum, d)=>sum + d.correct, 0);
+      const wrong = series.reduce((sum, d)=>sum + d.wrong, 0);
+      const total = correct + wrong;
+      const studyDays = series.filter(d => d.hours > 0 || d.total > 0).length;
+      const wrap = document.getElementById('analyticsSummary');
+      wrap.innerHTML = `
+        <div class="analytics-box"><div class="small">Filtro atual</div><strong>${subject === '__all__' ? 'Geral' : escapeHtml(subject)}</strong></div>
+        <div class="analytics-box"><div class="small">Horas no período</div><strong>${formatHours(totalHours)}</strong></div>
+        <div class="analytics-box"><div class="small">% de acerto</div><strong>${formatPercent(correct, total)}</strong></div>
+        <div class="analytics-box"><div class="small">Dias com estudo</div><strong>${studyDays}</strong></div>
+      `;
+    }
+
+    function renderPerformanceChart(){
+      return;
+    }
+
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke){
+      if (width < 0) width = 0;
+      if (height < 0) height = 0;
+      if (typeof radius === 'number') radius = {tl: radius, tr: radius, br: radius, bl: radius};
+      else radius = {...{tl:0,tr:0,br:0,bl:0}, ...radius};
+      ctx.beginPath();
+      ctx.moveTo(x + radius.tl, y);
+      ctx.lineTo(x + width - radius.tr, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+      ctx.lineTo(x + width, y + height - radius.br);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+      ctx.lineTo(x + radius.bl, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+      ctx.lineTo(x, y + radius.tl);
+      ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    function renderCalendarWeekdays(){
+      const wrap = document.getElementById('calendarWeekdays');
+      wrap.innerHTML = '';
+      DAYS_MINI.forEach(day => {
+        const div = document.createElement('div');
+        div.className = 'calendar-weekday';
+        div.textContent = day;
+        wrap.appendChild(div);
+      });
+    }
+
+    function renderCalendar(){
+      const view = new Date(calendarState.view.getFullYear(), calendarState.view.getMonth(), 1);
+      document.getElementById('calendarMonthLabel').textContent = `${MONTHS_PT[view.getMonth()]} ${view.getFullYear()}`;
+      const grid = document.getElementById('calendarGrid');
+      grid.innerHTML = '';
+
+      const firstDay = new Date(view.getFullYear(), view.getMonth(), 1);
+      const startOffset = (firstDay.getDay() + 6) % 7;
+      const gridStart = shiftDate(firstDay, -startOffset);
+      const todayKeyVal = dateToKey(todayDate());
+
+      for (let i=0;i<42;i++){
+        const d = shiftDate(gridStart, i);
+        const key = dateToKey(d);
+        const agg = aggregateSessions(key, analyticsState.subject);
+        const absences = getAbsencesByDate(key);
+        const inMonth = d.getMonth() === view.getMonth();
+
+        const cell = document.createElement('button');
+        cell.type = 'button';
+        cell.className = [
+          'calendar-day',
+          inMonth ? '' : 'muted-day',
+          key === todayKeyVal ? 'today' : '',
+          key === calendarState.selectedDateKey ? 'selected' : '',
+          agg.hours > 0 || agg.totalQuestions > 0 ? 'has-study' : '',
+          absences.length ? 'has-absence' : ''
+        ].filter(Boolean).join(' ');
+
+        const total = agg.totalQuestions;
+        cell.innerHTML = `
+          <div class="calendar-day-head">
+            <span class="calendar-num">${d.getDate()}</span>
+            <span class="calendar-hours">${agg.hours ? formatHours(agg.hours) : ''}</span>
+          </div>
+          <div class="calendar-mini">${total ? `${agg.correct}/${total} certas` : '—'}</div>
+          <div class="calendar-mini">${absences.length ? 'Ausência registrada' : (agg.sessions.length ? `${agg.sessions.length} sessão(ões)` : 'Sem registro')}</div>
+        `;
+        cell.addEventListener('click', () => {
+          calendarState.selectedDateKey = key;
+          renderCalendar();
+          saveState();
+        });
+        grid.appendChild(cell);
+      }
+
+      if (!calendarState.selectedDateKey) calendarState.selectedDateKey = todayKeyVal;
+      renderCalendarDetail();
+    }
+
+    function renderCalendarDetail(){
+      const key = calendarState.selectedDateKey || dateToKey(todayDate());
+      const d = keyToDate(key);
+      const agg = aggregateSessions(key, analyticsState.subject);
+      const absences = getAbsencesByDate(key);
+      const detail = document.getElementById('calendarDetail');
+
+      const badges = [];
+      badges.push(`<span class="badge">📅 ${formatDateFullBR(d)}</span>`);
+      badges.push(`<span class="badge">⏱ ${formatHours(agg.hours)}</span>`);
+      badges.push(`<span class="badge">🎯 ${agg.correct} certas / ${agg.wrong} erradas</span>`);
+      if (absences.length) badges.push(`<span class="badge">😔 ${escapeHtml(absences[0].reason)}</span>`);
+
+      let subjectsHtml = '<div class="empty-state">Nenhum registro nesse dia para o filtro atual.</div>';
+      if (agg.bySubject.length){
+        subjectsHtml = agg.bySubject.map(row => {
+          const total = row.correct + row.wrong;
+          return `<div class="meta-row"><div class="meta-name"><span class="subject-chip"><span class="dot" style="background:${getSubjectColor(row.subject)}"></span>${escapeHtml(row.subject)}</span></div><div class="pill">${formatHours(row.hours)} · ${formatPercent(row.correct, total)}</div></div>`;
+        }).join('');
+      }
+
+      detail.innerHTML = `
+        <div class="card-label" style="margin-bottom:0">Resumo do dia selecionado</div>
+        <div class="calendar-badges">${badges.join('')}</div>
+        <div style="margin-top:12px;">${subjectsHtml}</div>
+      `;
+    }
+
+    function applyTimerTimeToForm(){
+      const hours = timer.elapsedStudyMs / 3600000;
+      if (hours <= 0){
+        alert('Ainda não há tempo acumulado no timer.');
+        return;
+      }
+      setInputsFromDecimalHours('sessionHours', 'sessionMinutes', hours);
+      window.scrollTo({ top: document.getElementById('sessionHours').getBoundingClientRect().top + window.scrollY - 100, behavior:'smooth' });
+    }
+
+    function syncTimerInputs(){
+      document.getElementById('timerMode').value = timer.mode;
+      document.getElementById('focusMinutes').value = timer.focusMinutes;
+      document.getElementById('breakMinutes').value = timer.breakMinutes;
+      document.getElementById('timerModePill').textContent = timer.mode === 'pomodoro' ? 'pomodoro' : 'cronômetro';
+    }
+
+    function getTimerDisplayMs(){
+      if (timer.mode === 'stopwatch') return timer.elapsedStudyMs;
+      return timer.remainingMs;
+    }
+
+    function renderTimer(){
+      syncTimerInputs();
+      const ms = Math.max(0, getTimerDisplayMs());
+      const totalSeconds = Math.floor(ms/1000);
+      const mm = String(Math.floor(totalSeconds/60)).padStart(2,'0');
+      const ss = String(totalSeconds%60).padStart(2,'0');
+      document.getElementById('timerDisplay').textContent = `${mm}:${ss}`;
+      document.getElementById('timerPhaseChip').textContent = `Fase: ${timer.mode === 'stopwatch' ? 'livre' : timer.phase === 'focus' ? 'foco' : 'pausa'}`;
+      document.getElementById('timerPomodoroChip').textContent = `Pomodoros concluídos: ${timer.completedPomodoros}`;
+      document.getElementById('timerElapsedChip').textContent = `Tempo acumulado: ${formatHours(timer.elapsedStudyMs/3600000)}`;
+      document.getElementById('timerSubtitle').textContent =
+        timer.mode === 'stopwatch'
+          ? (timer.isRunning ? 'Cronômetro em andamento.' : 'Modo cronômetro · pronto para contar livremente.')
+          : (timer.isRunning
+              ? `Pomodoro em andamento · ${timer.phase === 'focus' ? 'foco' : 'pausa'}.`
+              : 'Modo pomodoro · pronta para começar o foco.');
+    }
+
+    function resetTimerForMode(){
+      timer.mode = document.getElementById('timerMode').value === 'stopwatch' ? 'stopwatch' : 'pomodoro';
+      timer.focusMinutes = Math.max(1, normalizeNumber(document.getElementById('focusMinutes').value) || 25);
+      timer.breakMinutes = Math.max(1, normalizeNumber(document.getElementById('breakMinutes').value) || 5);
+      timer.isRunning = false;
+      timer.lastTick = null;
+      timer.phase = 'focus';
+      timer.remainingMs = timer.focusMinutes * 60 * 1000;
+      if (timer.mode === 'stopwatch') timer.remainingMs = 0;
+      clearInterval(timerInterval);
+      timerInterval = null;
+      renderTimer();
+      saveState();
+    }
+
+    function startTimer(){
+      if (timer.isRunning) return;
+      timer.mode = document.getElementById('timerMode').value === 'stopwatch' ? 'stopwatch' : 'pomodoro';
+      timer.focusMinutes = Math.max(1, normalizeNumber(document.getElementById('focusMinutes').value) || 25);
+      timer.breakMinutes = Math.max(1, normalizeNumber(document.getElementById('breakMinutes').value) || 5);
+      if (timer.mode === 'pomodoro' && timer.remainingMs <= 0){
+        timer.phase = 'focus';
+        timer.remainingMs = timer.focusMinutes * 60 * 1000;
+      }
+      timer.isRunning = true;
+      timer.lastTick = Date.now();
+      clearInterval(timerInterval);
+      timerInterval = setInterval(tickTimer, 250);
+      renderTimer();
+    }
+
+    function pauseTimer(){
+      if (!timer.isRunning) return;
+      tickTimer();
+      timer.isRunning = false;
+      timer.lastTick = null;
+      clearInterval(timerInterval);
+      timerInterval = null;
+      renderTimer();
+      saveState();
+    }
+
+    function tickTimer(){
+      if (!timer.isRunning) return;
+      const now = Date.now();
+      const delta = now - (timer.lastTick || now);
+      timer.lastTick = now;
+
+      if (timer.mode === 'stopwatch'){
+        timer.elapsedStudyMs += delta;
+      } else {
+        if (timer.phase === 'focus') timer.elapsedStudyMs += delta;
+        timer.remainingMs -= delta;
+        if (timer.remainingMs <= 0){
+          if (timer.phase === 'focus'){
+            timer.completedPomodoros += 1;
+            timer.phase = 'break';
+            timer.remainingMs = timer.breakMinutes * 60 * 1000;
+          } else {
+            timer.phase = 'focus';
+            timer.remainingMs = timer.focusMinutes * 60 * 1000;
+          }
+        }
+      }
+      renderTimer();
+    }
+
+    function clearTimerAccumulated(){
+      pauseTimer();
+      timer.completedPomodoros = 0;
+      timer.elapsedStudyMs = 0;
+      timer.phase = 'focus';
+      timer.remainingMs = timer.mode === 'stopwatch' ? 0 : timer.focusMinutes * 60 * 1000;
+      renderTimer();
+      saveState();
+    }
+
+    function resetSessionForm(){
+      document.getElementById('sessionDate').value = dateToKey(todayDate());
+      document.getElementById('sessionSubject').value = '';
+      document.getElementById('customSubjectInput').value = '';
+      document.getElementById('customSubjectWrap').style.display = 'none';
+      document.getElementById('sessionHours').value = '';
+      document.getElementById('sessionMinutes').value = '';
+      document.getElementById('sessionCorrect').value = '';
+      document.getElementById('sessionWrong').value = '';
+      document.getElementById('sessionNote').value = '';
+      formFatigue = { start:'', end:'' };
+      document.querySelectorAll('.fadiga-btn').forEach(btn => btn.classList.remove('selected'));
+    }
+
+    function saveSession(){
+      const date = document.getElementById('sessionDate').value;
+      let subject = document.getElementById('sessionSubject').value;
+      const customSubject = document.getElementById('customSubjectInput').value.trim();
+      const hours = getDecimalHoursFromInputs('sessionHours', 'sessionMinutes');
+      const correct = Math.max(0, parseInt(document.getElementById('sessionCorrect').value || '0', 10) || 0);
+      const wrong = Math.max(0, parseInt(document.getElementById('sessionWrong').value || '0', 10) || 0);
+      const note = document.getElementById('sessionNote').value.trim();
+
+      if (!date){ alert('Selecione a data da sessão.'); return; }
+      if (!subject){ alert('Selecione a matéria estudada.'); return; }
+      if (subject === 'Outros'){
+        subject = customSubject || 'Outros';
+      }
+      if (hours <= 0 && correct <= 0 && wrong <= 0 && !note){
+        alert('Preencha pelo menos horas/minutos, questões ou uma observação relevante.');
+        return;
+      }
+
+      state.sessions.push({
+        id: `s_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+        date,
+        subject,
+        hours,
+        correct,
+        wrong,
+        note,
+        fatigueStart: formFatigue.start,
+        fatigueEnd: formFatigue.end,
+        createdAt: new Date().toISOString()
+      });
+
+      if (!state.settings.subjects.includes(subject) && subject !== 'Outros'){
+        state.settings.subjects.push(subject);
+      }
+      saveState();
+      renderAll();
+      resetSessionForm();
+    }
+
+    function saveAbsence(){
+      const date = document.getElementById('absenceDate').value;
+      const reason = document.getElementById('absenceReason').value.trim();
+      if (!date || !reason){
+        alert('Preencha a data e a justificativa.');
+        return;
+      }
+      const existing = state.absences.find(a => a.date === date);
+      if (existing){
+        existing.reason = reason;
+      } else {
+        state.absences.push({ id:`a_${Date.now()}_${Math.random().toString(36).slice(2,7)}`, date, reason });
+      }
+      document.getElementById('absenceReason').value = '';
+      saveState();
+      renderAll();
+    }
+
+    function saveDailyGoalHours(){
+      const hours = getDecimalHoursFromInputs('dailyGoalHoursInput', 'dailyGoalMinutesInput');
+      if (!hours || hours <= 0){
+        alert('Informe uma meta diária válida.');
+        return;
+      }
+      state.settings.dailyGoalHours = round1(hours);
+      saveState();
+      renderAll();
+    }
+
+    function exportData(){
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'sam-dashboard-estudos-v3.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(file){
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        try{
+          const parsed = JSON.parse(e.target.result);
+          state = {
+            settings:{
+              dailyGoalHours: normalizeNumber(parsed?.settings?.dailyGoalHours) || 7,
+              subjects: Array.isArray(parsed?.settings?.subjects) && parsed.settings.subjects.length ? parsed.settings.subjects : [...DEFAULT_SUBJECTS],
+              dailyGoals: Array.isArray(parsed?.settings?.dailyGoals) && parsed.settings.dailyGoals.length ? parsed.settings.dailyGoals : [...DEFAULT_GOALS]
+            },
+            sessions: Array.isArray(parsed?.sessions) ? parsed.sessions : [],
+            absences: Array.isArray(parsed?.absences) ? parsed.absences : [],
+            dailyGoalChecks: parsed?.dailyGoalChecks && typeof parsed.dailyGoalChecks === 'object' ? parsed.dailyGoalChecks : {}
+          };
+          saveState();
+          renderAll();
+        }catch(err){
+          alert('Arquivo inválido.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetAll(){
+      const ok = confirm('Tem certeza que deseja apagar todos os dados do dashboard?');
+      if (!ok) return;
+      localStorage.removeItem(STORAGE_KEY);
+      state = getDefaultState();
+      analyticsState = { subject:'__all__', range:14 };
+      calendarState = { view:new Date(), selectedDateKey:dateToKey(todayDate()) };
+      timer = getDefaultTimerState();
+      clearInterval(timerInterval);
+      timerInterval = null;
+      renderAll();
+      resetSessionForm();
+      document.getElementById('absenceDate').value = dateToKey(todayDate());
+    }
+
+    function loadDemoData(){
+      const today = todayDate();
+      const makeDate = d => dateToKey(shiftDate(today, d));
+      state = getDefaultState();
+      state.sessions = [
+        {id:'1',date:makeDate(-8),subject:'Português',hours:2,correct:18,wrong:7,note:'Interpretação de texto',fatigueStart:'pouco',fatigueEnd:'meio',createdAt:new Date().toISOString()},
+        {id:'2',date:makeDate(-7),subject:'SUS',hours:1.5,correct:14,wrong:6,note:'Lei 8.080',fatigueStart:'descansado',fatigueEnd:'pouco',createdAt:new Date().toISOString()},
+        {id:'3',date:makeDate(-6),subject:'Específicas',hours:3,correct:22,wrong:8,note:'Ventilação mecânica',fatigueStart:'descansado',fatigueEnd:'meio',createdAt:new Date().toISOString()},
+        {id:'4',date:makeDate(-5),subject:'Legislação Específica',hours:1.5,correct:10,wrong:5,note:'Regimento',fatigueStart:'pouco',fatigueEnd:'muito',createdAt:new Date().toISOString()},
+        {id:'5',date:makeDate(-4),subject:'Específicas',hours:2.5,correct:24,wrong:9,note:'Neonatologia',fatigueStart:'pouco',fatigueEnd:'meio',createdAt:new Date().toISOString()},
+        {id:'6',date:makeDate(-3),subject:'Português',hours:1,correct:12,wrong:3,note:'Crase e sintaxe',fatigueStart:'descansado',fatigueEnd:'pouco',createdAt:new Date().toISOString()},
+        {id:'7',date:makeDate(-2),subject:'SUS',hours:2,correct:15,wrong:5,note:'Participação social',fatigueStart:'pouco',fatigueEnd:'meio',createdAt:new Date().toISOString()},
+        {id:'8',date:makeDate(-1),subject:'Específicas',hours:3.5,correct:28,wrong:10,note:'Casos clínicos',fatigueStart:'descansado',fatigueEnd:'muito',createdAt:new Date().toISOString()},
+        {id:'9',date:makeDate(0),subject:'Português',hours:1.5,correct:16,wrong:4,note:'Questões FGV',fatigueStart:'pouco',fatigueEnd:'pouco',createdAt:new Date().toISOString()},
+        {id:'10',date:makeDate(0),subject:'Específicas',hours:2.5,correct:20,wrong:6,note:'Flashcards e revisão',fatigueStart:'descansado',fatigueEnd:'meio',createdAt:new Date().toISOString()}
+      ];
+      state.absences = [
+        {id:'a1',date:makeDate(-10),reason:'Plantão noturno'},
+        {id:'a2',date:makeDate(-9),reason:'Cansaço pós-plantão'}
+      ];
+      saveState();
+      renderAll();
+    }
+
+    function selectFatigue(group, value){
+      formFatigue[group] = value;
+      document.querySelectorAll(`.fadiga-btn[data-group="${group}"]`).forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.value === value);
+      });
+    }
+
+    function renderAll(){
+      renderHeader();
+      renderSubjectSelects();
+      renderDayCards();
+      renderStreak();
+      renderWeekChart();
+      renderDistribution();
+      renderGoals();
+      renderLogs();
+      renderAbsences();
+      renderAnalyticsSummary();
+      renderPerformanceChart();
+      renderCalendarWeekdays();
+      renderCalendar();
+      renderTimer();
+      renderSyncPanel();
+      document.getElementById('analyticsRange').value = String(analyticsState.range);
+      document.getElementById('sessionDate').value ||= dateToKey(todayDate());
+      document.getElementById('absenceDate').value ||= dateToKey(todayDate());
+    }
+
+    function bindEvents(){
+      document.getElementById('saveSessionBtn').addEventListener('click', saveSession);
+      document.getElementById('clearSessionBtn').addEventListener('click', resetSessionForm);
+      document.getElementById('sessionSubject').addEventListener('change', e => {
+        document.getElementById('customSubjectWrap').style.display = e.target.value === 'Outros' ? '' : 'none';
+      });
+
+      document.querySelectorAll('.fadiga-btn').forEach(btn => {
+        btn.addEventListener('click', () => selectFatigue(btn.dataset.group, btn.dataset.value));
+      });
+
+      document.getElementById('saveAbsenceBtn').addEventListener('click', saveAbsence);
+      document.getElementById('saveGoalHoursBtn').addEventListener('click', saveDailyGoalHours);
+
+      document.getElementById('editGoalsBtn').addEventListener('click', openGoalsModal);
+      document.getElementById('closeGoalsBtn').addEventListener('click', closeGoalsModal);
+      document.getElementById('saveGoalsBtn').addEventListener('click', saveGoalsFromModal);
+      document.getElementById('addGoalBtn').addEventListener('click', () => {
+        state.settings.dailyGoals.push('Nova meta');
+        openGoalsModal();
+      });
+      document.getElementById('goalsModal').addEventListener('click', e => {
+        if (e.target.id === 'goalsModal') closeGoalsModal();
+      });
+
+      document.getElementById('analyticsSubjectFilter').addEventListener('change', e => {
+        analyticsState.subject = e.target.value;
+        saveState();
+        renderAnalyticsSummary();
+        renderPerformanceChart();
+        renderCalendar();
+      });
+      document.getElementById('analyticsRange').addEventListener('change', e => {
+        analyticsState.range = Number(e.target.value);
+        saveState();
+        renderAnalyticsSummary();
+        renderPerformanceChart();
+      });
+
+      document.getElementById('prevMonthBtn').addEventListener('click', () => {
+        calendarState.view = new Date(calendarState.view.getFullYear(), calendarState.view.getMonth() - 1, 1);
+        renderCalendar();
+        saveState();
+      });
+      document.getElementById('nextMonthBtn').addEventListener('click', () => {
+        calendarState.view = new Date(calendarState.view.getFullYear(), calendarState.view.getMonth() + 1, 1);
+        renderCalendar();
+        saveState();
+      });
+
+      document.getElementById('timerMode').addEventListener('change', resetTimerForMode);
+      document.getElementById('focusMinutes').addEventListener('change', resetTimerForMode);
+      document.getElementById('breakMinutes').addEventListener('change', resetTimerForMode);
+      document.getElementById('timerStartBtn').addEventListener('click', startTimer);
+      document.getElementById('timerPauseBtn').addEventListener('click', pauseTimer);
+      document.getElementById('timerResetBtn').addEventListener('click', clearTimerAccumulated);
+      document.getElementById('timerApplyBtn').addEventListener('click', applyTimerTimeToForm);
+
+      document.getElementById('sbSaveConfigBtn').addEventListener('click', saveCloudConfigFromInputs);
+      document.getElementById('sbClearConfigBtn').addEventListener('click', clearCloudConfig);
+      document.getElementById('sbSignUpBtn').addEventListener('click', cloudSignUp);
+      document.getElementById('sbSignInBtn').addEventListener('click', cloudSignIn);
+      document.getElementById('sbSignOutBtn').addEventListener('click', cloudSignOut);
+      document.getElementById('sbSyncUpBtn').addEventListener('click', () => cloudSyncUp({quiet:false}));
+      document.getElementById('sbSyncDownBtn').addEventListener('click', cloudSyncDown);
+      document.getElementById('sbAutoSync').addEventListener('change', e => {
+        cloud.config.autoSync = !!e.target.checked;
+        saveCloudConfig();
+        renderSyncPanel();
+      });
+
+      document.getElementById('exportBtn').addEventListener('click', exportData);
+      document.getElementById('importFile').addEventListener('change', e => importData(e.target.files[0]));
+      document.getElementById('resetBtn').addEventListener('click', resetAll);
+      document.getElementById('loadDemoBtn').addEventListener('click', loadDemoData);
+
+      window.addEventListener('resize', () => {
+        renderPerformanceChart();
+      });
+    }
+
+    loadState();
+    loadCloudConfig();
+    calendarState.selectedDateKey ||= dateToKey(todayDate());
+    bindEvents();
+    renderAll();
+    resetTimerForMode();
+    initCloudClient({silent:true});
+  </script>
+</body>
+</html>
